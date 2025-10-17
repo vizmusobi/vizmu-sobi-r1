@@ -6,7 +6,6 @@
     <title>VS</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* Стилі залишаються без змін */
         body {
             margin: 0;
             overflow: hidden;
@@ -79,11 +78,20 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 20px rgba(0, 234, 255, 0.4);
             text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .category-btn:hover, .category-btn.active {
             transform: translateX(5px);
             box-shadow: 0 8px 25px rgba(0, 234, 255, 0.6);
             background: linear-gradient(45deg, #ff00ff, #00eaff);
+        }
+        .category-btn img {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            filter: drop-shadow(0 0 5px rgba(0, 234, 255, 0.5));
         }
         .product-panel {
             flex: 1;
@@ -290,7 +298,7 @@
             box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
             outline: none;
         }
-        .search-results, .postomat-list {
+        .search-results, .postomat-list, .branch-list {
             position: absolute;
             top: 100%;
             left: 0;
@@ -304,18 +312,36 @@
             display: none;
             box-shadow: 0 5px 20px rgba(0, 234, 255, 0.3);
         }
-        .search-result-item, .postomat-item {
+        .search-result-item, .postomat-item, .branch-item {
             padding: 12px;
             cursor: pointer;
             border-bottom: 1px solid rgba(0, 234, 255, 0.2);
             color: #fff;
             transition: background 0.2s ease;
         }
-        .search-result-item:hover, .postomat-item:hover {
+        .search-result-item:hover, .postomat-item:hover, .branch-item:hover {
             background: rgba(0, 234, 255, 0.2);
         }
-        .search-result-item:last-child, .postomat-item:last-child {
+        .search-result-item:last-child, .postomat-item:last-child, .branch-item:last-child {
             border-bottom: none;
+        }
+        .map-button {
+            background: linear-gradient(45deg, #ff00ff, #00eaff);
+            color: #fff;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 234, 255, 0.4);
+            margin: 10px 0;
+        }
+        .map-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 234, 255, 0.6);
         }
         @media (max-width: 768px) {
             .title { font-size: 48px; padding: 15px 0; }
@@ -325,6 +351,7 @@
             .product-image { height: 140px; }
             .pay-button { padding: 10px 20px; font-size: 16px; }
             .modal-content { width: 90%; padding: 25px; }
+            .category-btn img { width: 20px; height: 20px; }
         }
         @media (max-width: 480px) {
             .title { font-size: 36px; letter-spacing: 2px; }
@@ -334,6 +361,7 @@
             .product-card { width: 280px; max-width: 100%; }
             .product-image { height: 180px; }
             .pay-button { padding: 10px 30px; font-size: 16px; }
+            .category-btn img { width: 18px; height: 18px; }
         }
     </style>
 </head>
@@ -344,19 +372,26 @@
         <nav class="sidebar">
             <button class="category-btn active" data-category="Всі">Всі товари</button>
             <button class="category-btn" data-category="Штани">Штани</button>
-            <button class="category-btn" data-category="Кофти">Кофти</button>
+            <button class="category-btn" data-category="Кофти">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAflBMVEX///8AAADV1dX8/PwJCQnm5ubt7e3Hx8d+fn6enp7i4uLMzMza2trr6+vCwsL19fW5ublvb2+EhIShoaEjIyNSUlKYmJheXl6qqqqzs7OSkpL39/dzc3NLS0tbW1s9PT0ZGRlFRUUlJSUWFhYuLi4sLCxlZWWLi4s1NTU/Pz+F7tENAAAFoklEQVR4nO2caXuqMBCFL1jFpW644m432///B++tkMgSDwpM5PGe95sdp8xxzCRMgn/+EEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghRBhvvllsv8adV5OxFfjj2WzcHg1NVney+dpuNxOja12YO5pZN23s7i7WVcY1eNPGfc9KsAVoHZw4g6R1mTBO10nrLGHt2Av6HhrvTpJm3DpIGbcJ313KOrIa+a1sHCBinTYmRAQZa8N29DfQz0TpxIbiPGPcx3wPGWtgPf58shqc+cWa/gb/o6WNvaxx8QAFeezD0DbBcqHC3GljN/zDYR50psp6qUR+9Pblsq0lPkJCDmFg58lMlc13bQxiiTlG1qW2hh/OeWDqdKZqbQ0Is+SFL/bpRJyzdIi/Mz4nxl9G+UwW4lpw/vCn0Qs/rfD8xVWzXGT0lbEVH5aqrNZvZbP2Vls98MZphf1g8+lESxU1cVxy6HZ2+r2T2ubwl0Y0PTSiKI8Jaz9ajaosJScENbMc0x9OLTlFUc6NVjVxtEzGUWSs42xxwXWQBrX0mZmMLeXqyYZYjqGKsm2y6gW4sZSoIrw3GWvDVmkwrS27UL4P5dcFnaSByapXNCaj/nqfZEMshx5JY5O1o6zGm1x1E/wpG2JJVB11jJ0KZfwyGQdQfm2A40zNBeZxpu7z611m9MrZWO71TbLJqGuweRqtB63L3Y8zN5XSdb/bGy3nBg3r2P1l2ziR1oB+qo/Rub0VMVwlXWupMa3vah6zDE9Z19ppbBr03ZjHlm92rZXG5tgc5DmP2LUBXNvGGecBvC6uB3nWCPP4mu6V1i6PMMII3MN2j0jjo/PozkB0cY0wj953XfPY24LI7tI4mgLXh+Wxd7xdX77GbGc/hv+IPHp7FJKZCdQ4Qa7WNQ7QyEEa0T9trJCrb/O7OnpDoeRoRHlcX5n9I4228hiU0HfWiP75sI1creQxeCmn7xc4P7bAKsdCHr3y8s7APHbhJOvL7p7Cz/ce+ugqLnQ1trgqo2AJzQJbvkPoKtoDyG7HFwUvVbPb3jF20LUkzcoU4o0JOBim0LUk6TMjxXmD1+lAX8lyajiOUBQ4sxnOLsSQ3LaprJTmtH1xqZE8MgUrwH3gMOGyydgxr4jqBJr3NTS4MSInsAuvex8HeCVcauRWpyN43TuBYeLVodzWTYWl1HFcdCXDKbkYcFVbipy24X0s4aWgKx7DZfioUmGJUvMhJbC6Vekv3/BasKEhdurttVKF+JQsXh/CMVyCSktpqVKDx3BxDJtgZcBhwmbJRkjhDTsU92Dc6tfATobUDVS1AnMqIi41Mr0avOAvAKyIeNDLHJrC/aECwDBxO0Gm1CzhNQuAHzmArngMFwV23IuAw4Q7dz8iCm/cDL2dI7wc/kBFSk0F7fwU8HL2S03lpTQnTHy7LfHYEO5/FaJmpaa6UvpyePv+2e6+xpmH8JpuL8TzPNd0r/byPv3Yb2eLscQhW7ixdzP4yUJYXcRPZfob3z+dVvPOZBmMBkXLDlYIG1D4hrJyiirEW2NQod3D0Q0ZhfA4Bt7qqBohhbCaHawoUwgphMeG3qFr1QgphOuYF0vaQoQU4v6TJW0hQgrxusmSthAhhfgm25K2ECGFuCNrSVuIkEJ8P2FJWwgVXgWfMsDtJ0vaQoQUtqCvJW0hQgpxH8GSthAhhQ3oa0lbFIqMQty5sCMtggr/Y4U5B0WeXyE8Vmb1x6OkFH4iX6u/yiOl8OfpFcINJ6sPeEkphAeFnkIhPKJr9eEuKYVXHpgOgc9oVE1hhTmnmeDmyPMrtPrrWFIK4bGrp1AIzwllfvRVEimFcPPpKRTCrRm7CgsKLKXQ7u9juQXJWVuum4A6/jAtIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCHENn8BfFdG981N9BIAAAAASUVORK5CYII=" alt="Clothes Icon">
+                Кофти
+            </button>
             <button class="category-btn" data-category="Пончо">Пончо</button>
             <button class="category-btn" data-category="Одеяла">Одеяла</button>
         </nav>
-        <div class="product-panel" id="productPanel">
-            <!-- Продукти будуть рендеритися сюди -->
-        </div>
+        <div class="product-panel" id="productPanel"></div>
     </div>
     <div class="modal" id="deliveryModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Оформлення замовлення</h2>
             <form id="deliveryForm">
+                <select id="deliveryMethod" aria-label="Оберіть спосіб доставки">
+                    <option value="" disabled selected>Оберіть спосіб доставки</option>
+                    <option value="nova_poshta">Нова Пошта</option>
+                    <option value="ukrposhta">Укрпошта</option>
+                </select>
+                <div class="error-message" id="deliveryMethodError">Будь ласка, оберіть спосіб доставки</div>
                 <select id="city" aria-label="Оберіть місто">
                     <option value="" disabled selected>Оберіть місто</option>
                     <option value="Київ">Київ</option>
@@ -390,15 +425,30 @@
                         <option value="novohrad-volynskyi">Новоград-Волинський</option>
                     </select>
                 </div>
-                <div class="search-container">
-                    <input type="text" id="postomatSearch" class="search-input" placeholder="Пошук поштомата або введіть адресу" aria-label="Пошук поштомата">
-                    <div id="searchResults" class="search-results"></div>
+                <div id="novaPoshtaSection" style="display: none;">
+                    <div class="search-container">
+                        <input type="text" id="postomatSearch" class="search-input" placeholder="Пошук поштомата, відділення або введіть адресу" aria-label="Пошук поштомата або відділення">
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+                    <button type="button" class="map-button" onclick="openMap()">Вибрати на карті</button>
+                    <div id="postomatList" class="postomat-list"></div>
+                    <div id="postomatLoading" class="loading" style="display: none;">Завантажуємо поштомати...</div>
+                    <div id="postomatError" class="error-message" style="display: none;">Помилка завантаження поштоматів</div>
                 </div>
-                <div id="postomatList" class="postomat-list"></div>
-                <div id="postomatLoading" class="loading" style="display: none;">Завантажуємо поштомати...</div>
-                <div id="postomatError" class="error-message" style="display: none;">Помилка завантаження поштоматів</div>
-                <input type="text" id="deliveryAddress" placeholder="Введіть адресу доставки (якщо не поштомат)" aria-label="Адреса доставки">
-                <div class="error-message" id="addressError">Будь ласка, введіть адресу або оберіть поштомат</div>
+                <div id="ukrposhtaSection" style="display: none;">
+                    <div class="search-container">
+                        <input type="text" id="branchSearch" class="search-input" placeholder="Пошук відділення Укрпошти" aria-label="Пошук відділення Укрпошти">
+                        <div id="branchSearchResults" class="branch-list"></div>
+                    </div>
+                    <button type="button" class="map-button" onclick="openMap()">Вибрати на карті</button>
+                    <div id="branchList" class="branch-list"></div>
+                    <div id="branchLoading" class="loading" style="display: none;">Завантажуємо відділення...</div>
+                    <div id="branchError" class="error-message" style="display: none;">Помилка завантаження відділень</div>
+                    <input type="text" id="postalCode" placeholder="Введіть поштовий індекс (наприклад, 01001)" aria-label="Поштовий індекс">
+                    <div class="error-message" id="postalCodeError">Будь ласка, введіть коректний поштовий індекс</div>
+                </div>
+                <input type="text" id="deliveryAddress" placeholder="Введіть адресу доставки" aria-label="Адреса доставки">
+                <div class="error-message" id="addressError">Будь ласка, введіть адресу або оберіть поштомат/відділення</div>
                 <input type="text" id="name" placeholder="Ваше ім'я та прізвище" aria-label="Ім'я та прізвище">
                 <div class="error-message" id="nameError">Будь ласка, введіть ім'я та прізвище</div>
                 <input type="tel" id="phone" placeholder="Ваш номер телефону" aria-label="Номер телефону">
@@ -410,14 +460,11 @@
     <script>
         const canvas = document.getElementById('spaceCanvas');
         const ctx = canvas.getContext('2d');
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
         const stars = [];
         const planets = [];
         const numStars = 200;
-
         class Star {
             constructor() {
                 this.x = Math.random() * canvas.width;
@@ -431,7 +478,6 @@
                 const colors = ['#ffffff', '#ffeb3b', '#80d8ff', '#ff6f61', '#00eaff'];
                 this.color = colors[Math.floor(Math.random() * colors.length)];
             }
-
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
@@ -442,7 +488,6 @@
                 if (this.y < 0) this.y = canvas.height;
                 if (this.y > canvas.height) this.y = 0;
             }
-
             draw() {
                 const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
                 gradient.addColorStop(0, `${this.color}${Math.round(this.opacity * 255).toString(16).padStart(2, '0')}`);
@@ -453,7 +498,6 @@
                 ctx.fill();
             }
         }
-
         class Planet {
             constructor(type) {
                 this.x = Math.random() * canvas.width;
@@ -462,7 +506,6 @@
                 this.speedX = (Math.random() - 0.5) * 0.2;
                 this.speedY = (Math.random() - 0.5) * 0.2;
                 this.type = type || ['earth', 'mars', 'venus'][Math.floor(Math.random() * 3)];
-
                 if (this.type === 'earth') {
                     this.color = '#00ff00';
                     this.overlayColor = '#87ceeb';
@@ -474,7 +517,6 @@
                     this.overlayColor = '#ffa500';
                 }
             }
-
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
@@ -483,13 +525,11 @@
                 if (this.y < 0) this.y = canvas.height;
                 if (this.y > canvas.height) this.y = 0;
             }
-
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
-
                 ctx.beginPath();
                 if (this.type === 'earth') {
                     ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.4, 0, Math.PI * 2);
@@ -508,20 +548,17 @@
                     ctx.fillStyle = this.overlayColor;
                     ctx.fill();
                 }
-
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
                 ctx.lineWidth = 2;
                 ctx.stroke();
             }
         }
-
         for (let i = 0; i < numStars; i++) {
             stars.push(new Star());
         }
         for (let i = 0; i < 3; i++) {
             planets.push(new Planet(['earth', 'mars', 'venus'][i]));
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             stars.forEach(star => {
@@ -534,15 +571,11 @@
             });
             requestAnimationFrame(animate);
         }
-
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
-
         animate();
-
-        // Оновлений масив продуктів із новим товаром
         const products = [
             { name: 'Сорочка біла, Primark', price: '300 грн', image: 'https://i.postimg.cc/xT2TB5sw/de.webp', category: 'Пончо' },
             { name: 'Кофта чоловіча, XL', price: '299 грн', image: 'https://i.postimg.cc/Zqd51QSz/3dwed.webp', category: 'Кофти' },
@@ -551,13 +584,10 @@
             { name: 'Кофта на хлопчика 10-11 років', price: '245 грн', image: 'https://i.postimg.cc/BbGpxRqc/dws.webp', category: 'Кофти' },
             { name: 'Зелене Одеяло', price: '760 грн', image: 'https://i.postimg.cc/LsvNkhGW/f.webp', category: 'Одеяла' }
         ];
-
-        // Оновлений масив категорій
         const categories = ['Всі', 'Штани', 'Кофти', 'Пончо', 'Одеяла'];
         const productPanel = document.getElementById('productPanel');
         const categoryBtns = document.querySelectorAll('.category-btn');
         let currentCategory = 'Всі';
-
         function renderProducts(category) {
             const filteredProducts = category === 'Всі' ? products : products.filter(p => p.category === category);
             productPanel.innerHTML = '';
@@ -579,7 +609,6 @@
                 productPanel.appendChild(card);
             });
         }
-
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 categoryBtns.forEach(b => b.classList.remove('active'));
@@ -588,332 +617,551 @@
                 renderProducts(currentCategory);
             });
         });
-
-        // Початковий рендер
         renderProducts('Всі');
-
-        const postomatsData = {
-            "Київ": [
-                "Поштомат №3002, Столичне шосе, 103 (БЦ Европа)",
-                "Поштомат №3003, вул. Генерала Алмазова, 11",
-                "Поштомат №3033, просп. Петра Григоренка, 33/44",
-                "Поштомат №3034, вул. Здолбунівська, 17 (Ашан 2 поверх)",
-                "Поштомат №3035, вул. Ревуцького, 26",
-                "Поштомат №3038, просп. С. Бандери, 15А (Ашан 1 поверх)",
-                "Поштомат №3040, вул. Єлизавети Чавдар, 13",
-                "Поштомат №3041, вул. Колекторна, 3а",
-                "Поштомат №3042, вул. Анни Ахматової, 31"
-            ],
-            "Львів": [
-                "Поштомат №2001, вул. Городоцька, 160",
-                "Поштомат №2002, вул. Зелена, 32",
-                "Поштомат №2003, просп. Червоної Калини, 83",
-                "Поштомат №25392, просп. Незалежності, 91 (маг. Тайстра)"
-            ],
-            "Одеса": [
-                "Поштомат №4001, вул. Рішельєвська, 35",
-                "Поштомат №4002, вул. Фонтанська дорога, 23"
-            ],
-            "Харків": [
-                "Поштомат №3085, просп. Перемоги, 46 (№7)",
-                "Поштомат №3158, вул. Клочківська, 99а (№50)",
-                "Поштомат №3159, вул. Сумська, 48",
-                "Поштомат №5001, просп. Героїв Харкова, 199"
-            ],
-            "Дніпро": [
-                "Поштомат №6001, вул. Січеславська Набережна, 15",
-                "Поштомат №6002, просп. Дмитра Яворницького, 50"
-            ],
-            "Запоріжжя": [
-                "Поштомат №7001, вул. Перемоги, 141",
-                "Поштомат №7002, просп. Соборний, 152"
-            ],
-            "Вінниця": [
-                "Поштомат №8001, вул. Соборна, 89",
-                "Поштомат №8002, вул. Київська, 36"
-            ],
-            "Хмельницький": [
-                "Поштомат №9001, вул. Проскурівська, 24",
-                "Поштомат №9002, вул. Кам'янецька, 114"
-            ],
-            "Чернівці": [
-                "Поштомат №10001, вул. Головна, 266",
-                "Поштомат №10002, вул. Українська, 32"
-            ],
-            "Івано-Франківськ": [
-                "Поштомат №11001, вул. Галицька, 140",
-                "Поштомат №11002, вул. Вовчинецька, 209"
-            ],
-            "Тернопіль": [
-                "Поштомат №12001, вул. 15 Квітня, 7",
-                "Поштомат №12002, просп. Злуки, 20"
-            ],
-            "Рівне": [
-                "Поштомат №13001, вул. Соборна, 288",
-                "Поштомат №13002, вул. Відінська, 15"
-            ],
-            "Луцьк": [
-                "Поштомат №14001, вул. Лесі Українки, 67",
-                "Поштомат №14002, просп. Волі, 6"
-            ],
-            "Житомир": {
-                "zhytomyr": [
-                    "Поштомат №15003, вул. Київська, 40",
-                    "Поштомат №15004, майдан Перемоги, 2",
-                    "Поштомат №15005, вул. Театральна, 12",
-                    "Поштомат №15006, просп. Миру, 15"
+        const deliveryLocations = {
+            "Київ": {
+                nova_poshta: [
+                    { address: "Поштомат №3002, Столичне шосе, 103 (БЦ Европа)", map: "https://maps.app.goo.gl/abc123" },
+                    { address: "Поштомат №3003, вул. Генерала Алмазова, 11", map: "https://maps.app.goo.gl/def456" },
+                    { address: "Відділення №5, вул. Саксаганського, 101", map: "https://maps.app.goo.gl/ghi789" },
+                    { address: "Відділення №3, вул. Здолбунівська, 17", map: "https://maps.app.goo.gl/jkl012" }
                 ],
-                "berdychiv": [
-                    "Поштомат №15007, вул. Європейська, 132",
-                    "Поштомат №15008, вул. Шевченка, 50",
-                    "Поштомат №15009, просп. Хіміків, 20"
-                ],
-                "korosten": [
-                    "Поштомат №15010, вул. Грушевського, 52г",
-                    "Поштомат №15011, вул. Довженка, 10",
-                    "Поштомат №15012, просп. Перемоги, 25"
-                ],
-                "novohrad-volynskyi": [
-                    "Поштомат №15013, вул. Олександра Чернявського, 46",
-                    "Поштомат №15014, вул. Житомирська, 30",
-                    "Поштомат №15015, майдан Шевченка, 5"
+                ukrposhta: [
+                    { address: "Відділення №01001, вул. Хрещатик, 22", map: "https://maps.app.goo.gl/mno345", postalCode: "01001" },
+                    { address: "Відділення №01004, вул. Басейна, 5А", map: "https://maps.app.goo.gl/pqr678", postalCode: "01004" }
                 ]
             },
-            "Черкаси": [
-                "Поштомат №16001, бульв. Шевченка, 307",
-                "Поштомат №16002, вул. Хрещатик, 196"
-            ],
-            "Кропивницький": [
-                "Поштомат №17001, вул. Велика Перспективна, 16",
-                "Поштомат №17002, вул. Чорновола, 24"
-            ],
-            "Миколаїв": [
-                "Поштомат №18001, вул. Адміральська, 25",
-                "Поштомат №18002, просп. Центральний, 3"
-            ],
-            "Херсон": [
-                "Поштомат №19001, вул. Суворова, 42",
-                "Поштомат №19002, вул. 49-ї Гвардійської, 10"
-            ],
-            "Суми": [
-                "Поштомат №20001, вул. Харківська, 42",
-                "Поштомат №20002, просп. Шевченка, 29"
-            ],
-            "Чернігів": [
-                "Поштомат №21001, вул. Шевченка, 79",
-                "Поштомат №21002, просп. Перемоги, 127"
-            ]
+            "Львів": {
+                nova_poshta: [
+                    { address: "Поштомат №2001, вул. Городоцька, 160", map: "https://maps.app.goo.gl/stu901" },
+                    { address: "Відділення №12, вул. Зелена, 147", map: "https://maps.app.goo.gl/vwx234" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №79000, вул. Словацького, 1", map: "https://maps.app.goo.gl/yza567", postalCode: "79000" }
+                ]
+            },
+            "Одеса": {
+                nova_poshta: [
+                    { address: "Поштомат №4001, вул. Рішельєвська, 35", map: "https://maps.app.goo.gl/bcd890" },
+                    { address: "Відділення №7, вул. Фонтанська дорога, 25", map: "https://maps.app.goo.gl/efg123" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №65001, вул. Садова, 10", map: "https://maps.app.goo.gl/hij456", postalCode: "65001" }
+                ]
+            },
+            "Харків": {
+                nova_poshta: [
+                    { address: "Поштомат №3085, просп. Перемоги, 46", map: "https://maps.app.goo.gl/klm789" },
+                    { address: "Відділення №15, вул. Сумська, 53", map: "https://maps.app.goo.gl/nop012" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №61001, вул. Сумська, 37", map: "https://maps.app.goo.gl/qrs345", postalCode: "61001" }
+                ]
+            },
+            "Дніпро": {
+                nova_poshta: [
+                    { address: "Поштомат №6001, вул. Січеславська Набережна, 15", map: "https://maps.app.goo.gl/tuv678" },
+                    { address: "Відділення №9, просп. Дмитра Яворницького, 54", map: "https://maps.app.goo.gl/wxy901" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №49000, просп. Дмитра Яворницького, 62", map: "https://maps.app.goo.gl/zab234", postalCode: "49000" }
+                ]
+            },
+            "Запоріжжя": {
+                nova_poshta: [
+                    { address: "Поштомат №7001, вул. Перемоги, 141", map: "https://maps.app.goo.gl/cde567" },
+                    { address: "Відділення №6, просп. Соборний, 151", map: "https://maps.app.goo.gl/fgh890" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №69001, вул. Соборна, 111", map: "https://maps.app.goo.gl/ijk123", postalCode: "69001" }
+                ]
+            },
+            "Вінниця": {
+                nova_poshta: [
+                    { address: "Поштомат №8001, вул. Соборна, 89", map: "https://maps.app.goo.gl/lmn456" },
+                    { address: "Відділення №4, вул. Київська, 31", map: "https://maps.app.goo.gl/opq789" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №21001, вул. Соборна, 59", map: "https://maps.app.goo.gl/rst012", postalCode: "21001" }
+                ]
+            },
+            "Хмельницький": {
+                nova_poshta: [
+                    { address: "Поштомат №9001, вул. Проскурівська, 24", map: "https://maps.app.goo.gl/uvw345" },
+                    { address: "Відділення №8, вул. Кам'янецька, 112", map: "https://maps.app.goo.gl/xyz678" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №29001, вул. Проскурівська, 90", map: "https://maps.app.goo.gl/abc901", postalCode: "29001" }
+                ]
+            },
+            "Чернівці": {
+                nova_poshta: [
+                    { address: "Поштомат №10001, вул. Головна, 266", map: "https://maps.app.goo.gl/def234" },
+                    { address: "Відділення №3, вул. Руська, 248", map: "https://maps.app.goo.gl/ghi567" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №58001, вул. Поштова, 6", map: "https://maps.app.goo.gl/jkl890", postalCode: "58001" }
+                ]
+            },
+            "Івано-Франківськ": {
+                nova_poshta: [
+                    { address: "Поштомат №11001, вул. Галицька, 140", map: "https://maps.app.goo.gl/mno123" },
+                    { address: "Відділення №5, вул. Незалежності, 99", map: "https://maps.app.goo.gl/pqr456" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №76001, вул. Січових Стрільців, 13", map: "https://maps.app.goo.gl/stu789", postalCode: "76001" }
+                ]
+            },
+            "Тернопіль": {
+                nova_poshta: [
+                    { address: "Поштомат №12001, вул. 15 Квітня, 7", map: "https://maps.app.goo.gl/vwx012" },
+                    { address: "Відділення №6, вул. Руська, 21", map: "https://maps.app.goo.gl/yza345" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №46001, вул. Князя Острозького, 14", map: "https://maps.app.goo.gl/bcd678", postalCode: "46001" }
+                ]
+            },
+            "Рівне": {
+                nova_poshta: [
+                    { address: "Поштомат №13001, вул. Соборна, 288", map: "https://maps.app.goo.gl/efg901" },
+                    { address: "Відділення №4, вул. Київська, 44", map: "https://maps.app.goo.gl/hij234" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №33001, вул. Соборна, 56", map: "https://maps.app.goo.gl/klm567", postalCode: "33001" }
+                ]
+            },
+            "Луцьк": {
+                nova_poshta: [
+                    { address: "Поштомат №14001, вул. Лесі Українки, 67", map: "https://maps.app.goo.gl/nop890" },
+                    { address: "Відділення №3, просп. Волі, 8", map: "https://maps.app.goo.gl/qrs123" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №43001, вул. Кравчука, 11", map: "https://maps.app.goo.gl/tuv456", postalCode: "43001" }
+                ]
+            },
+            "Житомир": {
+                nova_poshta: {
+                    zhytomyr: [
+                        { address: "Поштомат №15003, вул. Київська, 40", map: "https://maps.app.goo.gl/wxy789" },
+                        { address: "Відділення №7, вул. Перемоги, 10", map: "https://maps.app.goo.gl/zab012" }
+                    ],
+                    berdychiv: [
+                        { address: "Поштомат №15007, вул. Європейська, 132", map: "https://maps.app.goo.gl/cde345" },
+                        { address: "Відділення №2, вул. Шевченка, 48", map: "https://maps.app.goo.gl/fgh678" }
+                    ],
+                    korosten: [
+                        { address: "Поштомат №15010, вул. Грушевського, 52г", map: "https://maps.app.goo.gl/ijk901" },
+                        { address: "Відділення №1, вул. Довженка, 12", map: "https://maps.app.goo.gl/lmn234" }
+                    ],
+                    "novohrad-volynskyi": [
+                        { address: "Поштомат №15013, вул. Олександра Чернявського, 46", map: "https://maps.app.goo.gl/opq567" },
+                        { address: "Відділення №3, вул. Житомирська, 28", map: "https://maps.app.goo.gl/rst890" }
+                    ]
+                },
+                ukrposhta: [
+                    { address: "Відділення №10001, вул. Київська, 74", map: "https://maps.app.goo.gl/uvw123", postalCode: "10001" },
+                    { address: "Відділення №10002, вул. Перемоги, 54", map: "https://maps.app.goo.gl/xyz456", postalCode: "10002" }
+                ]
+            },
+            "Черкаси": {
+                nova_poshta: [
+                    { address: "Поштомат №16001, бульв. Шевченка, 307", map: "https://maps.app.goo.gl/abc789" },
+                    { address: "Відділення №5, вул. Хрещатик, 200", map: "https://maps.app.goo.gl/def012" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №18001, вул. Байди Вишневецького, 34", map: "https://maps.app.goo.gl/ghi345", postalCode: "18001" }
+                ]
+            },
+            "Кропивницький": {
+                nova_poshta: [
+                    { address: "Поштомат №17001, вул. Велика Перспективна, 16", map: "https://maps.app.goo.gl/jkl678" },
+                    { address: "Відділення №3, вул. Чорновола, 22", map: "https://maps.app.goo.gl/mno901" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №25001, вул. Гоголя, 72", map: "https://maps.app.goo.gl/pqr234", postalCode: "25001" }
+                ]
+            },
+            "Миколаїв": {
+                nova_poshta: [
+                    { address: "Поштомат №18001, вул. Адміральська, 25", map: "https://maps.app.goo.gl/stu567" },
+                    { address: "Відділення №4, просп. Центральний, 5", map: "https://maps.app.goo.gl/vwx890" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №54001, вул. Адміральська, 27", map: "https://maps.app.goo.gl/yza123", postalCode: "54001" }
+                ]
+            },
+            "Херсон": {
+                nova_poshta: [
+                    { address: "Поштомат №19001, вул. Суворова, 42", map: "https://maps.app.goo.gl/bcd456" },
+                    { address: "Відділення №2, вул. Ушакова, 35", map: "https://maps.app.goo.gl/efg789" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №73001, вул. Соборна, 16", map: "https://maps.app.goo.gl/hij012", postalCode: "73001" }
+                ]
+            },
+            "Суми": {
+                nova_poshta: [
+                    { address: "Поштомат №20001, вул. Харківська, 42", map: "https://maps.app.goo.gl/klm345" },
+                    { address: "Відділення №3, вул. Петропавлівська, 60", map: "https://maps.app.goo.gl/nop678" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №40001, вул. Воскресенська, 13", map: "https://maps.app.goo.gl/qrs901", postalCode: "40001" }
+                ]
+            },
+            "Чернігів": {
+                nova_poshta: [
+                    { address: "Поштомат №21001, вул. Шевченка, 79", map: "https://maps.app.goo.gl/tuv234" },
+                    { address: "Відділення №5, просп. Перемоги, 129", map: "https://maps.app.goo.gl/wxy567" }
+                ],
+                ukrposhta: [
+                    { address: "Відділення №14001, вул. Мазепи, 4", map: "https://maps.app.goo.gl/zab890", postalCode: "14001" }
+                ]
+            }
         };
-
         const modal = document.getElementById('deliveryModal');
+        const deliveryMethodSelect = document.getElementById('deliveryMethod');
         const citySelect = document.getElementById('city');
         const districtSelect = document.getElementById('district');
         const districtSection = document.getElementById('districtSection');
+        const novaPoshtaSection = document.getElementById('novaPoshtaSection');
+        const ukrposhtaSection = document.getElementById('ukrposhtaSection');
         const postomatSearch = document.getElementById('postomatSearch');
         const searchResults = document.getElementById('searchResults');
         const postomatList = document.getElementById('postomatList');
         const postomatLoading = document.getElementById('postomatLoading');
         const postomatError = document.getElementById('postomatError');
+        const branchSearch = document.getElementById('branchSearch');
+        const branchSearchResults = document.getElementById('branchSearchResults');
+        const branchList = document.getElementById('branchList');
+        const branchLoading = document.getElementById('branchLoading');
+        const branchError = document.getElementById('branchError');
+        const postalCodeInput = document.getElementById('postalCode');
         const deliveryAddressInput = document.getElementById('deliveryAddress');
         const nameInput = document.getElementById('name');
         const phoneInput = document.getElementById('phone');
         const submitButton = document.getElementById('submitButton');
+        const deliveryMethodError = document.getElementById('deliveryMethodError');
         const cityError = document.getElementById('cityError');
+        const postalCodeError = document.getElementById('postalCodeError');
         const addressError = document.getElementById('addressError');
         const nameError = document.getElementById('nameError');
         const phoneError = document.getElementById('phoneError');
-
         let currentProduct = { name: '', price: '' };
-        let currentPostomats = [];
+        let currentLocations = [];
         let searchTimeout;
-
-        citySelect.addEventListener('change', loadDistrictsAndPostomats);
-        districtSelect.addEventListener('change', loadPostomats);
-
-        function buyProduct(name, price) {
-            currentProduct = { name, price };
-            openModal();
-        }
-
-        function loadDistrictsAndPostomats() {
-            const city = citySelect.value;
-            districtSection.style.display = 'none';
-            searchResults.style.display = 'none';
-            postomatSearch.value = '';
-            postomatList.style.display = 'none';
-            postomatLoading.style.display = 'none';
-            postomatError.style.display = 'none';
-            deliveryAddressInput.style.display = 'block';
-
-            if (city && postomatsData[city] && typeof postomatsData[city] === 'object' && !Array.isArray(postomatsData[city])) {
-                districtSection.style.display = 'block';
-                districtSelect.value = localStorage.getItem('selectedDistrict') || '';
-                currentPostomats = [];
-                if (districtSelect.value) loadPostomats();
-            } else if (city && Array.isArray(postomatsData[city])) {
-                loadPostomatsFromArray(postomatsData[city]);
-            } else {
-                currentPostomats = [];
-            }
-        }
-
-        function loadPostomats() {
-            const city = citySelect.value;
-            const district = districtSelect.value;
-            searchResults.style.display = 'none';
-            postomatSearch.value = '';
-            postomatList.style.display = 'none';
-            postomatLoading.style.display = 'block';
-            postomatError.style.display = 'none';
-            deliveryAddressInput.style.display = 'block';
-
-            if (city && district && postomatsData[city] && postomatsData[city][district]) {
-                loadPostomatsFromArray(postomatsData[city][district]);
-            } else if (city && Array.isArray(postomatsData[city])) {
-                loadPostomatsFromArray(postomatsData[city]);
-            } else {
-                currentPostomats = [];
-                postomatLoading.style.display = 'none';
-            }
-        }
-
-        function loadPostomatsFromArray(postomats) {
-            setTimeout(() => {
-                currentPostomats = postomats;
-                displayPostomats(postomats);
-                const savedAddress = localStorage.getItem('selectedPostomat');
-                if (savedAddress && postomats.includes(savedAddress)) {
-                    postomatSearch.value = savedAddress;
-                    deliveryAddressInput.value = savedAddress;
-                    deliveryAddressInput.style.display = 'none';
-                }
-                postomatLoading.style.display = 'none';
-                postomatList.style.display = 'block';
-            }, 800);
-        }
-
-        function displayPostomats(postomats) {
-            postomatList.innerHTML = '';
-            postomats.slice(0, 10).forEach(postomat => {
-                const item = document.createElement('div');
-                item.className = 'postomat-item';
-                item.textContent = postomat;
-                item.addEventListener('click', () => {
-                    postomatSearch.value = postomat;
-                    deliveryAddressInput.value = postomat;
-                    deliveryAddressInput.style.display = 'none';
-                    searchResults.style.display = 'none';
-                    localStorage.setItem('selectedPostomat', postomat);
-                });
-                postomatList.appendChild(item);
-            });
-        }
-
+        deliveryMethodSelect.addEventListener('change', updateDeliveryForm);
+        citySelect.addEventListener('change', loadDistrictsAndLocations);
+        districtSelect.addEventListener('change', loadLocations);
         postomatSearch.addEventListener('input', function() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const query = this.value.toLowerCase().trim();
                 if (query.length < 2) {
                     searchResults.style.display = 'none';
-                    displayPostomats(currentPostomats);
+                    displayLocations(currentLocations, 'postomat');
                     return;
                 }
-                const filtered = currentPostomats.filter(addr => addr.toLowerCase().includes(query));
-                displaySearchResults(filtered);
+                const filtered = currentLocations.filter(loc => loc.address.toLowerCase().includes(query));
+                displaySearchResults(filtered, 'postomat');
             }, 300);
         });
-
-        function displaySearchResults(results) {
-            searchResults.innerHTML = '';
+        branchSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = this.value.toLowerCase().trim();
+                if (query.length < 2) {
+                    branchSearchResults.style.display = 'none';
+                    displayLocations(currentLocations, 'branch');
+                    return;
+                }
+                const filtered = currentLocations.filter(loc => loc.address.toLowerCase().includes(query));
+                displaySearchResults(filtered, 'branch');
+            }, 300);
+        });
+        function buyProduct(name, price) {
+            currentProduct = { name, price };
+            openModal();
+        }
+        function updateDeliveryForm() {
+            const deliveryMethod = deliveryMethodSelect.value;
+            novaPoshtaSection.style.display = 'none';
+            ukrposhtaSection.style.display = 'none';
+            districtSection.style.display = 'none';
+            postomatSearch.value = '';
+            branchSearch.value = '';
+            searchResults.style.display = 'none';
+            branchSearchResults.style.display = 'none';
+            postomatList.style.display = 'none';
+            branchList.style.display = 'none';
+            postomatLoading.style.display = 'none';
+            branchLoading.style.display = 'none';
+            postomatError.style.display = 'none';
+            branchError.style.display = 'none';
+            postalCodeInput.value = '';
+            deliveryAddressInput.value = '';
+            deliveryAddressInput.style.display = 'block';
+            if (deliveryMethod === 'nova_poshta') {
+                novaPoshtaSection.style.display = 'block';
+                deliveryAddressInput.placeholder = 'Введіть адресу або оберіть поштомат/відділення';
+            } else if (deliveryMethod === 'ukrposhta') {
+                ukrposhtaSection.style.display = 'block';
+                deliveryAddressInput.placeholder = 'Введіть адресу або оберіть відділення';
+            }
+            loadDistrictsAndLocations();
+        }
+        function loadDistrictsAndLocations() {
+            const city = citySelect.value;
+            const deliveryMethod = deliveryMethodSelect.value;
+            districtSection.style.display = 'none';
+            postomatSearch.value = '';
+            branchSearch.value = '';
+            searchResults.style.display = 'none';
+            branchSearchResults.style.display = 'none';
+            postomatList.style.display = 'none';
+            branchList.style.display = 'none';
+            postomatLoading.style.display = 'none';
+            branchLoading.style.display = 'none';
+            postomatError.style.display = 'none';
+            branchError.style.display = 'none';
+            currentLocations = [];
+            if (!city || !deliveryMethod) return;
+            if (deliveryMethod === 'nova_poshta' && city === 'Житомир') {
+                districtSection.style.display = 'block';
+                districtSelect.value = localStorage.getItem('selectedDistrict') || '';
+                if (districtSelect.value) loadLocations();
+            } else if (deliveryMethod === 'nova_poshta' && deliveryLocations[city]?.nova_poshta) {
+                loadLocationsFromArray(deliveryLocations[city].nova_poshta, 'postomat');
+            } else if (deliveryMethod === 'ukrposhta' && deliveryLocations[city]?.ukrposhta) {
+                loadLocationsFromArray(deliveryLocations[city].ukrposhta, 'branch');
+            }
+        }
+        function loadLocations() {
+            const city = citySelect.value;
+            const district = districtSelect.value;
+            const deliveryMethod = deliveryMethodSelect.value;
+            if (deliveryMethod !== 'nova_poshta') return;
+            postomatSearch.value = '';
+            searchResults.style.display = 'none';
+            postomatList.style.display = 'none';
+            postomatLoading.style.display = 'block';
+            postomatError.style.display = 'none';
+            if (city === 'Житомир' && district && deliveryLocations[city]?.nova_poshta[district]) {
+                loadLocationsFromArray(deliveryLocations[city].nova_poshta[district], 'postomat');
+            } else if (deliveryLocations[city]?.nova_poshta) {
+                loadLocationsFromArray(deliveryLocations[city].nova_poshta, 'postomat');
+            } else {
+                currentLocations = [];
+                postomatLoading.style.display = 'none';
+                postomatError.style.display = 'block';
+            }
+        }
+        function loadLocationsFromArray(locations, type) {
+            setTimeout(() => {
+                currentLocations = locations;
+                displayLocations(locations, type);
+                const savedAddress = localStorage.getItem(type === 'postomat' ? 'selectedPostomat' : 'selectedBranch');
+                if (savedAddress && locations.some(loc => loc.address === savedAddress)) {
+                    if (type === 'postomat') {
+                        postomatSearch.value = savedAddress;
+                    } else {
+                        branchSearch.value = savedAddress;
+                    }
+                    deliveryAddressInput.value = savedAddress;
+                    deliveryAddressInput.style.display = 'none';
+                }
+                if (type === 'postomat') {
+                    postomatLoading.style.display = 'none';
+                    postomatList.style.display = 'block';
+                } else {
+                    branchLoading.style.display = 'none';
+                    branchList.style.display = 'block';
+                }
+            }, 800);
+        }
+        function displayLocations(locations, type) {
+            const targetList = type === 'postomat' ? postomatList : branchList;
+            targetList.innerHTML = '';
+            locations.slice(0, 10).forEach(loc => {
+                const item = document.createElement('div');
+                item.className = type === 'postomat' ? 'postomat-item' : 'branch-item';
+                item.textContent = loc.address;
+                item.addEventListener('click', () => {
+                    if (type === 'postomat') {
+                        postomatSearch.value = loc.address;
+                        searchResults.style.display = 'none';
+                    } else {
+                        branchSearch.value = loc.address;
+                        branchSearchResults.style.display = 'none';
+                        if (loc.postalCode) postalCodeInput.value = loc.postalCode;
+                    }
+                    deliveryAddressInput.value = loc.address;
+                    deliveryAddressInput.style.display = 'none';
+                    localStorage.setItem(type === 'postomat' ? 'selectedPostomat' : 'selectedBranch', loc.address);
+                });
+                targetList.appendChild(item);
+            });
+        }
+        function displaySearchResults(results, type) {
+            const targetResults = type === 'postomat' ? searchResults : branchSearchResults;
+            targetResults.innerHTML = '';
             if (results.length === 0) {
                 const noResult = document.createElement('div');
                 noResult.className = 'search-result-item';
                 noResult.textContent = 'Нічого не знайдено';
-                searchResults.appendChild(noResult);
+                targetResults.appendChild(noResult);
             } else {
                 results.slice(0, 10).forEach(result => {
                     const item = document.createElement('div');
                     item.className = 'search-result-item';
-                    item.textContent = result;
+                    item.textContent = result.address;
                     item.addEventListener('click', () => {
-                        postomatSearch.value = result;
-                        deliveryAddressInput.value = result;
+                        if (type === 'postomat') {
+                            postomatSearch.value = result.address;
+                            searchResults.style.display = 'none';
+                        } else {
+                            branchSearch.value = result.address;
+                            branchSearchResults.style.display = 'none';
+                            if (result.postalCode) postalCodeInput.value = result.postalCode;
+                        }
+                        deliveryAddressInput.value = result.address;
                         deliveryAddressInput.style.display = 'none';
-                        searchResults.style.display = 'none';
-                        localStorage.setItem('selectedPostomat', result);
+                        localStorage.setItem(type === 'postomat' ? 'selectedPostomat' : 'selectedBranch', result.address);
                     });
-                    searchResults.appendChild(item);
+                    targetResults.appendChild(item);
                 });
             }
-            searchResults.style.display = 'block';
+            targetResults.style.display = 'block';
         }
-
         document.addEventListener('click', function(e) {
             if (!postomatSearch.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.style.display = 'none';
             }
-        });
-
-        postomatSearch.addEventListener('focus', function() {
-            if (currentPostomats.length > 0 && this.value.trim()) {
-                displaySearchResults(currentPostomats.filter(addr => addr.toLowerCase().includes(this.value.toLowerCase().trim())));
+            if (!branchSearch.contains(e.target) && !branchSearchResults.contains(e.target)) {
+                branchSearchResults.style.display = 'none';
             }
         });
-
+        postomatSearch.addEventListener('focus', function() {
+            if (currentLocations.length > 0 && this.value.trim()) {
+                displaySearchResults(currentLocations.filter(loc => loc.address.toLowerCase().includes(this.value.toLowerCase().trim())), 'postomat');
+            }
+        });
+        branchSearch.addEventListener('focus', function() {
+            if (currentLocations.length > 0 && this.value.trim()) {
+                displaySearchResults(currentLocations.filter(loc => loc.address.toLowerCase().includes(this.value.toLowerCase().trim())), 'branch');
+            }
+        });
+        function openMap() {
+            const city = citySelect.value;
+            const deliveryMethod = deliveryMethodSelect.value;
+            const district = districtSelect.value;
+            let mapUrl = '';
+            if (deliveryMethod === 'nova_poshta' && city) {
+                if (city === 'Житомир' && district && deliveryLocations[city]?.nova_poshta[district]) {
+                    mapUrl = `https://www.google.com/maps/search/Нова+Пошта+${city}+${district}`;
+                } else if (deliveryLocations[city]?.nova_poshta) {
+                    mapUrl = `https://www.google.com/maps/search/Нова+Пошта+${city}`;
+                }
+            } else if (deliveryMethod === 'ukrposhta' && city) {
+                mapUrl = `https://www.google.com/maps/search/Укрпошта+${city}`;
+            }
+            if (mapUrl) {
+                window.open(mapUrl, '_blank');
+            } else {
+                alert('Будь ласка, оберіть місто та спосіб доставки');
+            }
+        }
         function openModal() {
             modal.style.display = 'flex';
+            resetForm();
             const savedCity = localStorage.getItem('selectedCity');
+            const savedDeliveryMethod = localStorage.getItem('selectedDeliveryMethod');
+            if (savedDeliveryMethod && deliveryMethodSelect.querySelector(`option[value="${savedDeliveryMethod}"]`)) {
+                deliveryMethodSelect.value = savedDeliveryMethod;
+                updateDeliveryForm();
+            }
             if (savedCity && citySelect.querySelector(`option[value="${savedCity}"]`)) {
                 citySelect.value = savedCity;
-                loadDistrictsAndPostomats();
+                loadDistrictsAndLocations();
             }
         }
-
-        function closeModal() {
-            modal.style.display = 'none';
+        function resetForm() {
+            deliveryMethodSelect.value = '';
             citySelect.value = '';
             districtSelect.value = '';
-            districtSection.style.display = 'none';
             postomatSearch.value = '';
-            postomatList.innerHTML = '';
-            postomatList.style.display = 'none';
+            branchSearch.value = '';
+            postalCodeInput.value = '';
             deliveryAddressInput.value = '';
-            deliveryAddressInput.style.display = 'block';
             nameInput.value = '';
             phoneInput.value = '';
+            novaPoshtaSection.style.display = 'none';
+            ukrposhtaSection.style.display = 'none';
+            districtSection.style.display = 'none';
+            postomatList.innerHTML = '';
+            branchList.innerHTML = '';
+            postomatList.style.display = 'none';
+            branchList.style.display = 'none';
+            searchResults.style.display = 'none';
+            branchSearchResults.style.display = 'none';
+            postomatLoading.style.display = 'none';
+            branchLoading.style.display = 'none';
+            postomatError.style.display = 'none';
+            branchError.style.display = 'none';
+            deliveryAddressInput.style.display = 'block';
+            deliveryMethodSelect.classList.remove('error');
             citySelect.classList.remove('error');
+            postalCodeInput.classList.remove('error');
             deliveryAddressInput.classList.remove('error');
             nameInput.classList.remove('error');
             phoneInput.classList.remove('error');
+            deliveryMethodError.style.display = 'none';
             cityError.style.display = 'none';
+            postalCodeError.style.display = 'none';
             addressError.style.display = 'none';
             nameError.style.display = 'none';
             phoneError.style.display = 'none';
-            postomatError.style.display = 'none';
-            searchResults.style.display = 'none';
         }
-
+        function closeModal() {
+            modal.style.display = 'none';
+            resetForm();
+        }
         function validateForm() {
             let isValid = true;
+            deliveryMethodSelect.classList.remove('error');
             citySelect.classList.remove('error');
+            postalCodeInput.classList.remove('error');
             deliveryAddressInput.classList.remove('error');
             nameInput.classList.remove('error');
             phoneInput.classList.remove('error');
+            deliveryMethodError.style.display = 'none';
             cityError.style.display = 'none';
+            postalCodeError.style.display = 'none';
             addressError.style.display = 'none';
             nameError.style.display = 'none';
             phoneError.style.display = 'none';
-
+            if (!deliveryMethodSelect.value) {
+                deliveryMethodSelect.classList.add('error');
+                deliveryMethodError.style.display = 'block';
+                isValid = false;
+            }
             if (!citySelect.value) {
                 citySelect.classList.add('error');
                 cityError.style.display = 'block';
                 isValid = false;
             }
-            if (citySelect.value === 'Житомир' && !districtSelect.value) {
+            if (deliveryMethodSelect.value === 'nova_poshta' && citySelect.value === 'Житомир' && !districtSelect.value) {
                 alert('Будь ласка, оберіть район для Житомира');
                 isValid = false;
             }
-            const address = deliveryAddressInput.value.trim() || postomatSearch.value.trim();
+            if (deliveryMethodSelect.value === 'ukrposhta') {
+                const postalRegex = /^\d{5}$/;
+                if (!postalCodeInput.value.trim() || !postalRegex.test(postalCodeInput.value.trim())) {
+                    postalCodeInput.classList.add('error');
+                    postalCodeError.style.display = 'block';
+                    isValid = false;
+                }
+            }
+            const address = deliveryAddressInput.value.trim() || postomatSearch.value.trim() || branchSearch.value.trim();
             if (!address) {
                 deliveryAddressInput.classList.add('error');
                 addressError.style.display = 'block';
@@ -932,37 +1180,36 @@
             }
             return isValid;
         }
-
         async function submitDelivery() {
             if (!validateForm()) return;
-
             submitButton.disabled = true;
             submitButton.textContent = 'Відправка...';
-
+            const deliveryMethod = deliveryMethodSelect.value === 'nova_poshta' ? 'Нова Пошта' : 'Укрпошта';
             const city = citySelect.value;
             let district = '';
-            if (city === 'Житомир') {
+            if (city === 'Житомир' && deliveryMethodSelect.value === 'nova_poshta') {
                 district = districtSelect.value;
                 localStorage.setItem('selectedDistrict', district);
             }
-            const deliveryAddress = deliveryAddressInput.value.trim() || postomatSearch.value.trim();
+            const postalCode = postalCodeInput.value.trim();
+            const deliveryAddress = deliveryAddressInput.value.trim() || postomatSearch.value.trim() || branchSearch.value.trim();
             const name = nameInput.value.trim();
             const phone = phoneInput.value.trim();
-
             localStorage.setItem('selectedCity', city);
-            localStorage.setItem('selectedPostomat', deliveryAddress);
-
+            localStorage.setItem('selectedDeliveryMethod', deliveryMethodSelect.value);
+            if (deliveryMethodSelect.value === 'nova_poshta') {
+                localStorage.setItem('selectedPostomat', deliveryAddress);
+            } else {
+                localStorage.setItem('selectedBranch', deliveryAddress);
+            }
             const webhookUrl = 'https://discord.com/api/webhooks/1422641023657705513/AdZtuDpO8fVTzm5KmQcGwYuRSvhbNztwAOgfvedHaHpEiykbGN4ARKUat5OkJAhID2XH';
             const payload = {
-                content: `🌌 Нове замовлення:\nТовар: ${currentProduct.name}\nЦіна: ${currentProduct.price}\nМісто: ${city}${district ? `, Район: ${district}` : ''}\nАдреса доставки/поштомат: ${deliveryAddress}\nІм'я: ${name}\nТелефон: ${phone}`
+                content: `🌌 Нове замовлення:\nТовар: ${currentProduct.name}\nЦіна: ${currentProduct.price}\nСпосіб доставки: ${deliveryMethod}\nМісто: ${city}${district ? `, Район: ${district}` : ''}\n${deliveryMethod === 'Укрпошта' ? `Поштовий індекс: ${postalCode}\n` : ''}Адреса доставки${deliveryMethod === 'Нова Пошта' ? '/поштомат/відділення' : '/відділення'}: ${deliveryAddress}\nІм'я: ${name}\nТелефон: ${phone}`
             };
-
             try {
                 const response = await fetch(webhookUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (response.ok) {
@@ -981,4 +1228,4 @@
         }
     </script>
 </body>
-</html>
+</html>і
